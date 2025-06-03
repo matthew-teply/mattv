@@ -5,15 +5,20 @@ import path from 'path';
 import fs from 'fs';
 import bonjour from 'bonjour';
 import { execSync } from 'child_process';
+import chalk from 'chalk';
 
-import { FactoryDatabase } from './factory';
-import { ServiceMedia, ServiceMediaSegment, ServiceMediaSequence, ServiceProgramRecord } from './service';
-import { SEGMENT_STANDARD_DURATION } from './constants';
-import { Media, MediaSegment } from './types';
-import { ServiceLogger } from './service/ServiceLogger';
+import { PUBLIC_DIR } from '@constants';
 
-const PORT = 8000;
-const PUBLIC_PATH = path.join(process.cwd(), 'public');
+import { FactoryDatabase } from '@core/factory';
+import { ServiceMedia, ServiceMediaSegment, ServiceMediaSequence, ServiceProgramRecord, ServiceLogger } from '@core/service';
+import { SEGMENT_STANDARD_DURATION } from '@core/constants';
+import { Media, MediaSegment } from '@core/types';
+
+import { DEFAULT_PORT } from '@api/constants';
+
+const [,, portArg] = process.argv;
+
+const port = portArg ?? DEFAULT_PORT;
 
 const app = express();
 
@@ -95,7 +100,7 @@ const generateM3U8 = () => {
 }
 
 app.use('/', (req, _res, next) => { serviceLogger.client(`[${req.ip}] ${req.url}`); next(); })
-app.use('/', express.static(PUBLIC_PATH));
+app.use('/', express.static(PUBLIC_DIR));
 
 app.get('/', (_req, res) => {
     res.send('Welcome to MatTV!<br><h3>Program</h3>');
@@ -126,26 +131,32 @@ const getLocalIP = () => {
 }
 
 app.get('/watch', (req, res) => {
-    let watchPageHtml = fs.readFileSync(path.join(PUBLIC_PATH, 'index.html')).toString();
+    let watchPageHtml = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html')).toString();
 
     watchPageHtml = watchPageHtml.replace('<TV_URL>', `${getLocalIP()}:8000`);
 
     res.send(watchPageHtml);
 })
 
-app.listen(PORT, () => {
+app.listen(port, () => {
     const bonjourInstance = bonjour();
 
+    /*
     bonjourInstance.publish({
         name: 'mat-tv',
         type: 'http',
         port: 8000,
     });
+    */
 
-    const localNetworkName = execSync('scutil --get LocalHostName').toString().trim();
+    const localNetworkAddress = execSync('ipconfig getifaddr en0').toString().trim();
 
-    serviceLogger.server(`Started service at ${localNetworkName}.local:${PORT}`);
+    serviceLogger.server(`Server started
 
+    ${chalk.bold('Device:')} ${chalk.cyanBright(`127.0.0.1:${port}`)}
+    ${chalk.bold('Local Network:')} ${chalk.cyanBright(`${localNetworkAddress}:${port}`)}
+`);
+    
     process.on('SIGTERM', () => {
         bonjourInstance.unpublishAll(() => {
             bonjourInstance.destroy();

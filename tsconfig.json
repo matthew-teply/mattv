@@ -12,6 +12,7 @@
       "@core/*": ["./src/core/*"],
       "@broady/*": ["./src/broady/*"],
       "@admin/*": ["./src/admin/*"],
+      "@api/*": ["./src/api/*"],
       "@public/*": ["./public/*"],
     }
   },
