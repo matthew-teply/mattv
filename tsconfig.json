@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "target": "ES2020"
+  },
+  "exclude": [
+    "input-files",
+    "public",
+  ]
+}

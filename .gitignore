@@ -11,3 +11,10 @@
 
 #!.yarn/cache
 .pnp.*
+
+.yarn
+node_modules
+
+# Keep the folders
+public/*
+input-files/*
