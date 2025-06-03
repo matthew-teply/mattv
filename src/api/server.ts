@@ -1,18 +1,14 @@
-import os from 'os';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
-import bonjour from 'bonjour';
-import { execSync } from 'child_process';
 import chalk from 'chalk';
 
 import { PUBLIC_DIR } from '@constants';
 
 import { FactoryDatabase } from '@core/factory';
-import { ServiceMedia, ServiceMediaSegment, ServiceMediaSequence, ServiceProgramRecord, ServiceLogger } from '@core/service';
+import {ServiceMediaSequence, ServiceLogger, ServiceStream, ServiceNetwork} from '@core/service';
 import { SEGMENT_STANDARD_DURATION } from '@core/constants';
-import { Media, MediaSegment } from '@core/types';
 
 import { DEFAULT_PORT } from '@api/constants';
 
@@ -26,78 +22,11 @@ app.use(cors());
 
 const db = (new FactoryDatabase()).create();
 
-const serviceLogger = new ServiceLogger();
-
-const serviceProgramRecord = new ServiceProgramRecord(db);
-const serviceMediaSegment = new ServiceMediaSegment(db);
+const serviceStream = new ServiceStream(db);
 const serviceMediaSequence = new ServiceMediaSequence(db);
-const serviceMedia = new ServiceMedia(db);
 
-const generateM3U8 = () => {
-    const now = Date.now();
-
-    const programRecords = serviceProgramRecord.getCurrentProgramRecords(now);
-
-    if (programRecords === null) {
-        console.error('Nothing is playing right now...');
-        return;
-    }
-
-    const mediaSegments: MediaSegment[] = [];
-
-    for (const programRecord of programRecords) {
-        mediaSegments.push(serviceMediaSegment.getMediaSegmentById(programRecord.segmentId));
-    }
-
-    if (mediaSegments.length === 0) {
-        console.error('No segments found for current program records');
-        return;
-    }
-
-    const mediaSequence = serviceMediaSequence.getMediaSequence();
-
-    const lines = [
-        '#EXTM3U',
-        '#EXT-X-VERSION:3',
-        '#EXT-X-PLAYLIST-TYPE: EVENT',
-        `#EXT-X-TARGETDURATION:${SEGMENT_STANDARD_DURATION}`,
-        `#EXT-X-MEDIA-SEQUENCE:${mediaSequence}`,
-    ];
-
-    const manifestMediaSegmentLines = [];
-
-    let currentMediaPlaying: Media | null = null;
-
-    mediaSegments.forEach(mediaSegment => {
-        if (serviceMediaSegment.isFirstMediaSegment(mediaSegment)) {
-            // Even if it is the same media, first segment always has to indicate discontinuity
-            manifestMediaSegmentLines.push('#EXT-X-DISCONTINUITY');
-        }
-
-        if (currentMediaPlaying === null || currentMediaPlaying.id !== mediaSegment.id) {
-            currentMediaPlaying = serviceMedia.getMediaById(mediaSegment.mediaId);
-        }
-
-        manifestMediaSegmentLines.push(`#EXTINF:${mediaSegment.duration.toFixed(3)},${currentMediaPlaying.displayName}`);
-        manifestMediaSegmentLines.push(mediaSegment.path);
-    });
-
-    lines.push(...manifestMediaSegmentLines);
-
-    const m3u8Body = lines.join("\n");
-    
-    serviceMediaSequence.increaseMediaSequence();
-
-    serviceLogger.server(`Media sequence increased (${mediaSequence} → ${serviceMediaSequence.getMediaSequence()})`);
-
-    fs.writeFileSync('./public/stream.m3u8', m3u8Body);
-
-    serviceLogger.server(`m3u8 generated`);
-    
-    const lastMediaPlayedId = programRecords.pop().mediaId;
-
-    serviceMedia.setLastMediaPlayed(serviceMedia.getMediaById(lastMediaPlayedId).path);
-}
+const serviceLogger = new ServiceLogger();
+const serviceNetwork = new ServiceNetwork();
 
 app.use('/', (req, _res, next) => { serviceLogger.client(`[${req.ip}] ${req.url}`); next(); })
 app.use('/', express.static(PUBLIC_DIR));
@@ -107,7 +36,7 @@ app.get('/', (_req, res) => {
 });
 
 app.get('/tv', (req, res) => {
-    const m3u8Body = fs.readFileSync('./public/stream.m3u8').toString();
+    const m3u8Body = fs.readFileSync(path.join(PUBLIC_DIR, 'stream.m3u8')).toString();
 
     res.setHeader('Content-Disposition', 'inline; filename="MatTV.m3u8"');
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
@@ -116,60 +45,26 @@ app.get('/tv', (req, res) => {
     res.send(m3u8Body);
 });
 
-const getLocalIP = () => {
-    const interfaces = os.networkInterfaces();
-    
-    for (const name of Object.keys(interfaces)) {
-        for (const iface of interfaces[name]) {
-            if (iface.family === 'IPv4' && !iface.internal) {
-            return iface.address;
-            }
-        }
-    }
-
-    return '127.0.0.1'; // fallback if no external interface found
-}
-
 app.get('/watch', (req, res) => {
     let watchPageHtml = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html')).toString();
 
-    watchPageHtml = watchPageHtml.replace('<TV_URL>', `${getLocalIP()}:8000`);
+    watchPageHtml = watchPageHtml.replace('<TV_URL>', `${serviceNetwork.getLocalIP()}:${port}`);
 
     res.send(watchPageHtml);
 })
 
 app.listen(port, () => {
-    const bonjourInstance = bonjour();
-
-    /*
-    bonjourInstance.publish({
-        name: 'mat-tv',
-        type: 'http',
-        port: 8000,
-    });
-    */
-
-    const localNetworkAddress = execSync('ipconfig getifaddr en0').toString().trim();
-
     serviceLogger.server(`Server started
 
     ${chalk.bold('Device:')} ${chalk.cyanBright(`127.0.0.1:${port}`)}
-    ${chalk.bold('Local Network:')} ${chalk.cyanBright(`${localNetworkAddress}:${port}`)}
+    ${chalk.bold('Local Network:')} ${chalk.cyanBright(`${serviceNetwork.getLocalIP()}:${port}`)}
 `);
-    
-    process.on('SIGTERM', () => {
-        bonjourInstance.unpublishAll(() => {
-            bonjourInstance.destroy();
-            process.exit();
-        })
-    })
 
     serviceMediaSequence.resetMediaSequence();
-
-    generateM3U8();
+    serviceStream.generateM3U8();
 
     setInterval(() => {
-        generateM3U8();
+        serviceStream.generateM3U8();
     }, SEGMENT_STANDARD_DURATION * 1000);
 });
 
