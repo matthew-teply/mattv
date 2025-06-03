@@ -1,6 +1,7 @@
 import type { Database as IDatabase } from 'better-sqlite3';
-import { Media, MediaType, MediaFromDb } from '../../types';
-import { FactoryMedia } from '../../factory';
+
+import { Media, MediaType, MediaFromDb } from '@core/types';
+import { FactoryMedia } from '@core/factory';
 
 export class ServiceMedia {
     private db: IDatabase;

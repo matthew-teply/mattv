@@ -1,4 +1,4 @@
-import { MediaFromDb, Media, MediaType } from '../types';
+import { MediaFromDb, Media, MediaType } from '@core/types';
 
 export class FactoryMedia {
     fromDatabase(mediaFromDb: MediaFromDb): Media {

@@ -1,4 +1,5 @@
-import { MediaType } from '../../types';
+import { MediaType } from '@core/types';
+
 import { mediaRegister } from '../media/mediaRegister';
 import { mediaSegmentGenerate } from '../mediaSegment/mediaSegmentGenerate';
 

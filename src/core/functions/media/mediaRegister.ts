@@ -1,6 +1,6 @@
-import { FactoryDatabase } from '../../factory';
-import { ServiceMedia } from '../../service';
-import { MediaType } from '../../types';
+import { FactoryDatabase } from '@core/factory';
+import { ServiceMedia } from '@core/service';
+import { MediaType } from '@core/types';
 
 const [,, mediaPath, displayName] = process.argv;
 

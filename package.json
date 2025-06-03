@@ -2,23 +2,24 @@
   "name": "mattv",
   "packageManager": "yarn@4.5.2",
   "scripts": {
-    "server:start": "ts-node src/server.ts",
-    "server:dev": "nodemon src/server.ts",
-    "program-records:generate": "ts-node src/functions/programRecord/programRecordGenerate.ts",
-    "program-records:purge": "ts-node src/functions/programRecord/programRecordPurge.ts",
-    "segments:generate": "ts-node src/functions/mediaSegment/mediaSegmentGenerate.ts",
-    "media:check": "ts-node src/functions/media/mediaCheck.ts",
-    "media:register": "ts-node src/functions/media/mediaRegister.ts",
-    "media:delete": "ts-node src/functions/media/mediaDelete.ts",
-    "upload:media:segments": "ts-node src/functions/upload/uploadMediaWithMediaSegments.ts",
-    "upload:media:segments:bulk": "ts-node src/functions/upload/uploadMediaWithMediaSegmentsBulk.ts"
+    "server:start": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/server.ts",
+    "server:dev": "nodemon src/core/server.ts",
+    "program-records:generate": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/programRecord/programRecordGenerate.ts",
+    "program-records:purge": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/programRecord/programRecordPurge.ts",
+    "segments:generate": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/mediaSegment/mediaSegmentGenerate.ts",
+    "media:check": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaCheck.ts",
+    "media:register": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaRegister.ts",
+    "media:delete": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaDelete.ts",
+    "upload:media:segments": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/upload/uploadMediaWithMediaSegments.ts",
+    "upload:media:segments:bulk": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/upload/uploadMediaWithMediaSegmentsBulk.ts"
   },
   "dependencies": {
     "better-sqlite3": "^11.10.0",
     "bonjour": "^3.5.0",
     "chalk": "^5.4.1",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

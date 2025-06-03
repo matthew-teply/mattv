@@ -1,5 +1,5 @@
-import { FactoryDatabase } from '../../factory';
-import { ServiceMediaSegment } from '../../service';
+import { FactoryDatabase } from '@core/factory';
+import { ServiceMediaSegment } from '@core/service';
 
 const [,, input, outputDir] = process.argv;
 

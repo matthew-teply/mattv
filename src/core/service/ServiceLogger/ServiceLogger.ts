@@ -1,6 +1,7 @@
 import chalk from 'chalk';
-import { LoggerCaller } from '../../types';
-import { callers } from '../../constants';
+
+import { LoggerCaller } from '@core/types';
+import { callers } from '@core/constants';
 
 export class ServiceLogger {
     log(text: string, caller?: LoggerCaller) {

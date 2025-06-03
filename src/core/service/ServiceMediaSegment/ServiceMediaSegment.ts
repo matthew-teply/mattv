@@ -2,11 +2,12 @@ import type { Database as IDatabase } from 'better-sqlite3';
 import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { ServiceMedia } from '..';
-import { Media, MediaSegment, MediaSegmentFromDb } from '../../types';
-import { FactorySegment } from '../../factory';
 
-const PUBLIC_DIR = path.join(__dirname, '../../../public');
+import { PUBLIC_DIR } from '@constants';
+
+import { ServiceMedia } from '@core/service';
+import { Media, MediaSegment, MediaSegmentFromDb } from '@core/types';
+import { FactorySegment } from '@core/factory';
 
 interface SegmentM3U8Info {
     duration: number;

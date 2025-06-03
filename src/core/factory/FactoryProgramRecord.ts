@@ -1,4 +1,4 @@
-import { ProgramRecord, ProgramRecordFromDb } from '../types';
+import { ProgramRecord, ProgramRecordFromDb } from '@core/types';
 
 export class FactoryProgramRecord {
     fromDatabase(programRecordFromDb: ProgramRecordFromDb): ProgramRecord {

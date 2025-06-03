@@ -1,4 +1,4 @@
-import { MediaSegment, MediaSegmentFromDb } from '../types';
+import { MediaSegment, MediaSegmentFromDb } from '@core/types';
 
 export class FactorySegment {
     fromDatabase(segmentFromDb: MediaSegmentFromDb): MediaSegment {

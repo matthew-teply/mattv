@@ -1,4 +1,4 @@
-import { MEDIA_TYPE_AD, MEDIA_TYPE_MOVIE, MEDIA_TYPE_SHOW, MEDIA_TYPE_STANDBY } from '../constants';
+import { MEDIA_TYPE_AD, MEDIA_TYPE_MOVIE, MEDIA_TYPE_SHOW, MEDIA_TYPE_STANDBY } from '@core/constants';
 
 export interface Media {
     id: number;

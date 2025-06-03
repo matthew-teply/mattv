@@ -4,7 +4,16 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "outDir": "dist",
-    "target": "ES2020"
+    "target": "ES2020",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"],
+      "@constants": ["./src/constants.ts"],
+      "@core/*": ["./src/core/*"],
+      "@broady/*": ["./src/broady/*"],
+      "@admin/*": ["./src/admin/*"],
+      "@public/*": ["./public/*"],
+    }
   },
   "exclude": [
     "input-files",

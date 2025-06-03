@@ -1,5 +1,5 @@
-import { FactoryDatabase } from '../../factory';
-import { ServiceMedia } from '../../service';
+import { FactoryDatabase } from '@core/factory';
+import { ServiceMedia } from '@core/service';
 
 export const checkMedia = () => {
     const db = (new FactoryDatabase()).create();

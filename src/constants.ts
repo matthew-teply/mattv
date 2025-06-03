@@ -1,6 +1,6 @@
-export * from './constants/index';
+import path from 'path';
 
-export const SEGMENTS_BUFFER_SIZE = 5;
-export const SEGMENT_STANDARD_DURATION = 10;
+export const PROJECT_ROOT = path.resolve(__dirname, '..');
 
-export const MEDIA_STANDBY_PATH = '/utility/standby/';
+export const DATABASE_DIR = path.join(PROJECT_ROOT, 'database');
+export const PUBLIC_DIR = path.join(PROJECT_ROOT, 'public');

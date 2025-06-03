@@ -1,11 +1,13 @@
 import fs from 'fs';
+import path from 'path';
 import type { Database as IDatabase } from 'better-sqlite3';
-import { ServiceMedia, ServiceMediaSegment } from '..';
-import { FactoryProgramRecord } from '../../factory';
-import { MediaSegment, ProgramRecord, ProgramRecordFromDb } from '../../types';
-import { MEDIA_STANDBY_PATH, SEGMENT_STANDARD_DURATION, SEGMENTS_BUFFER_SIZE } from '../../constants';
 
-const MEDIA_DIR = './public/';
+import { PUBLIC_DIR } from '@constants';
+
+import { ServiceMedia, ServiceMediaSegment } from '@core/service';
+import { FactoryProgramRecord } from '@core/factory';
+import { MediaSegment, ProgramRecord, ProgramRecordFromDb } from '@core/types';
+import { MEDIA_STANDBY_PATH, SEGMENT_STANDARD_DURATION, SEGMENTS_BUFFER_SIZE } from '@core/constants';
 
 export class ServiceProgramRecord {
     private db: IDatabase;
@@ -158,8 +160,8 @@ export class ServiceProgramRecord {
         return this.serviceMedia.getLastMediaPlayed() === MEDIA_STANDBY_PATH;
     }
 
-    private getM3U8Contents(path: string) {
-        return fs.readFileSync(`${MEDIA_DIR}${path}/stream.m3u8`, 'utf-8').toString();
+    private getM3U8Contents(m3u8Path: string) {
+        return fs.readFileSync(path.join(PUBLIC_DIR, m3u8Path, 'stream.m3u8'), 'utf-8').toString();
     }
 
     private generateProgramRecordTime(start: number, duration: number) {

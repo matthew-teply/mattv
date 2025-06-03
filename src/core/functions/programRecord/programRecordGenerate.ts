@@ -1,5 +1,5 @@
-import { ServiceProgramRecord } from '../../service/ServiceProgramRecord/ServiceProgramRecord';
-import { FactoryDatabase } from '../../factory';
+import { ServiceProgramRecord } from '@core/service';
+import { FactoryDatabase } from '@core/factory';
 
 export const generateProgram = () => {
     const db = (new FactoryDatabase()).create();
