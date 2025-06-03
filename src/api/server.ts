@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import { PUBLIC_DIR } from '@constants';
 
 import { FactoryDatabase } from '@core/factory';
-import {ServiceMediaSequence, ServiceLogger, ServiceStream, ServiceNetwork} from '@core/service';
+import { ServiceMediaSequence, ServiceLogger, ServiceStream, ServiceNetwork } from '@core/service';
 import { SEGMENT_STANDARD_DURATION } from '@core/constants';
 
 import { DEFAULT_PORT } from '@api/constants';
@@ -28,12 +28,13 @@ const serviceMediaSequence = new ServiceMediaSequence(db);
 const serviceLogger = new ServiceLogger();
 const serviceNetwork = new ServiceNetwork();
 
-app.use('/', (req, _res, next) => { serviceLogger.client(`[${req.ip}] ${req.url}`); next(); })
-app.use('/', express.static(PUBLIC_DIR));
-
-app.get('/', (_req, res) => {
-    res.send('Welcome to MatTV!<br><h3>Program</h3>');
+// Public assets logging middleware
+app.use('/', (req, _res, next) => {
+    serviceLogger.client(`[${req.ip}] ${req.url}`);
+    next();
 });
+
+app.use('/', express.static(PUBLIC_DIR));
 
 app.get('/tv', (req, res) => {
     const m3u8Body = fs.readFileSync(path.join(PUBLIC_DIR, 'stream.m3u8')).toString();
@@ -45,16 +46,8 @@ app.get('/tv', (req, res) => {
     res.send(m3u8Body);
 });
 
-app.get('/watch', (req, res) => {
-    let watchPageHtml = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html')).toString();
-
-    watchPageHtml = watchPageHtml.replace('<TV_URL>', `${serviceNetwork.getLocalIP()}:${port}`);
-
-    res.send(watchPageHtml);
-})
-
 app.listen(port, () => {
-    serviceLogger.server(`Server started
+    serviceLogger.server(`Server started ${portArg ? `with custom port ${chalk.greenBright(port)}` : ''}
 
     ${chalk.bold('Device:')} ${chalk.cyanBright(`127.0.0.1:${port}`)}
     ${chalk.bold('Local Network:')} ${chalk.cyanBright(`${serviceNetwork.getLocalIP()}:${port}`)}
