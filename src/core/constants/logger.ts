@@ -6,5 +6,9 @@ export const callers = {
     client: {
         name: 'Client',
         color: '#FFCA28',
+    },
+    stream: {
+        name: 'Stream',
+        color: '#DA70D6',
     }
 }

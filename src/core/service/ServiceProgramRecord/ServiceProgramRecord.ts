@@ -1,8 +1,4 @@
-import fs from 'fs';
-import path from 'path';
 import type { Database as IDatabase } from 'better-sqlite3';
-
-import { PUBLIC_DIR } from '@constants';
 
 import { ServiceMedia, ServiceMediaSegment } from '@core/service';
 import { FactoryProgramRecord } from '@core/factory';
@@ -10,7 +6,7 @@ import { MediaSegment, ProgramRecord, ProgramRecordFromDb } from '@core/types';
 import { MEDIA_STANDBY_PATH, SEGMENT_STANDARD_DURATION, SEGMENTS_BUFFER_SIZE } from '@core/constants';
 
 export class ServiceProgramRecord {
-    private db: IDatabase;
+    private readonly db: IDatabase;
 
     private factoryProgramRecord = new FactoryProgramRecord();
 
@@ -41,7 +37,7 @@ export class ServiceProgramRecord {
             for (let mediaSegment of mediaSegments) {
                 const currentProgramRecord = {
                     // If there were previously set program records and media segments, continue from where they left off
-                    from: (previousMediaSegment !== null && previousProgramRecord !== null) ? previousProgramRecord.from + previousMediaSegment.duration * 1000 : programStart,
+                    from: this.generateProgramRecordFrom(previousMediaSegment, previousProgramRecord, programStart),
                     segmentId: mediaSegment.id,
                     mediaId: media.id,
                 }
@@ -60,7 +56,9 @@ export class ServiceProgramRecord {
         // 1. Select program that is playing RIGHT NOW or has been playing FOR SOME TIME
         // 2. Order by time, latest first
         // 3. Get the desired buffer
-        const programRecordStmnt = this.db.prepare(`SELECT * FROM program WHERE "from" >= ? ORDER BY "from" ASC LIMIT ${SEGMENTS_BUFFER_SIZE}`);
+        const programRecordStmnt = this.db.prepare(
+            `SELECT * FROM program WHERE "from" >= ? ORDER BY "from" ASC LIMIT ${SEGMENTS_BUFFER_SIZE}`
+        );
 
         const dbResults = programRecordStmnt.all(now);
 
@@ -68,23 +66,31 @@ export class ServiceProgramRecord {
             return null;
         }
 
-        const programRecords = this.factoryProgramRecord.fromDatabaseBulk(dbResults as ProgramRecordFromDb[]);
+        const programRecords = this.factoryProgramRecord
+            .fromDatabaseBulk(dbResults as ProgramRecordFromDb[]);
 
         return this.supplementProgramRecords(programRecords, now);
     }
 
     uploadProgramRecordsToDatabase(programRecords: Omit<ProgramRecord, 'id'>[]) {
-        const insertProgramRecordStmnt = this.db.prepare('INSERT INTO program ("from", segment_id, media_id) VALUES (?, ?, ?)');
+        const insertProgramRecordStmnt =
+            this.db.prepare('INSERT INTO program ("from", segment_id, media_id) VALUES (?, ?, ?)');
 
         let changes = 0;
 
-        const insertMany = this.db.transaction((programRecords: Omit<ProgramRecord, 'id'>[]) => {
-            for (const programRecord of programRecords) {
-                const run = insertProgramRecordStmnt.run(programRecord.from, programRecord.segmentId, programRecord.mediaId);
+        const insertMany = this.db.transaction(
+            (programRecords: Omit<ProgramRecord, 'id'>[]) => {
+                for (const programRecord of programRecords) {
+                    const run = insertProgramRecordStmnt.run(
+                        programRecord.from,
+                        programRecord.segmentId,
+                        programRecord.mediaId
+                    );
 
-                changes += run.changes;
+                    changes += run.changes;
+                }
             }
-        });
+        );
 
         insertMany(programRecords);
 
@@ -111,12 +117,15 @@ export class ServiceProgramRecord {
 
         // PROGRAM RECORDS ARE IN THE FUTURE (BACK)
         //
-        // The first program record is in the future, a show is going to come on in a few tens of seconds, we need to supplement back 
+        // The first program record is in the future, a show is going to come on in a few tens
+        // of seconds then we need to supplement back
         if (programRecords.length > 0 && now - programRecords[0].from < SEGMENT_STANDARD_DURATION * 1000) {
             supplementaionData.back.isRequired = true;
 
             // How far in the future is the first program record? In the increment of 10s
-            supplementaionData.back.count = Math.abs(Math.ceil((now - programRecords[0].from) / (SEGMENT_STANDARD_DURATION * 1000)));
+            supplementaionData.back.count = Math.abs(
+                Math.ceil((now - programRecords[0].from) / (SEGMENT_STANDARD_DURATION * 1000))
+            );
         }
 
         const standByProgramRecord = this.getStandByProgramRecord();
@@ -146,7 +155,8 @@ export class ServiceProgramRecord {
 
     private getStandByProgramRecord() {
         const mediaStandBy = this.serviceMedia.getMediaByMediaPath(MEDIA_STANDBY_PATH);
-        const mediaSegmentStandBy = this.serviceMediaSegment.getMediaSegmentsByMediaId(mediaStandBy.id)[0];
+        const mediaSegmentStandBy = this.serviceMediaSegment
+            .getMediaSegmentsByMediaId(mediaStandBy.id)[0];
 
         return {
             id: 0,
@@ -156,18 +166,13 @@ export class ServiceProgramRecord {
         };
     }
 
-    private isProgramRecordComingFromStandBy() {
-        return this.serviceMedia.getLastMediaPlayed() === MEDIA_STANDBY_PATH;
-    }
-
-    private getM3U8Contents(m3u8Path: string) {
-        return fs.readFileSync(path.join(PUBLIC_DIR, m3u8Path, 'stream.m3u8'), 'utf-8').toString();
-    }
-
-    private generateProgramRecordTime(start: number, duration: number) {
-        return {
-            from: start,
-            to: start + duration,
-        }
+    private generateProgramRecordFrom(
+        previousMediaSegment: MediaSegment,
+        previousProgramRecord: Omit<ProgramRecord, 'id'>,
+        programStart: number
+    ) {
+        return (previousMediaSegment !== null && previousProgramRecord !== null)
+            ? previousProgramRecord.from + previousMediaSegment.duration * 1000
+            : programStart
     }
 }

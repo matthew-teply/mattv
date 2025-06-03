@@ -5,7 +5,7 @@ import path from 'path';
 
 import { PUBLIC_DIR } from '@constants';
 
-import { ServiceMedia } from '@core/service';
+import {ServiceMedia, ServiceStream} from '@core/service';
 import { Media, MediaSegment, MediaSegmentFromDb } from '@core/types';
 import { FactorySegment } from '@core/factory';
 
@@ -15,7 +15,7 @@ interface SegmentM3U8Info {
 }
 
 export class ServiceMediaSegment {
-    private db: IDatabase;
+    private readonly db: IDatabase;
     
     private serviceMedia: ServiceMedia;
 
@@ -86,8 +86,8 @@ export class ServiceMediaSegment {
         this.uploadMediaSegmentsToDatabase(outputDir, media);
     }
 
-    uploadMediaSegmentsToDatabase(outputDit: string, media: Media) {
-        const m3u8Contents = this.getM3U8Contents(outputDit);
+    uploadMediaSegmentsToDatabase(outputDir: string, media: Media) {
+        const m3u8Contents = this.getM3U8Contents(outputDir);
         const segments = this.getMediaSegmentsFromM3U8(m3u8Contents);
 
         if (this.deleteMediaSegmentsByMediaId(media.id)) {
@@ -166,12 +166,6 @@ export class ServiceMediaSegment {
 
     isFirstMediaSegment(mediaSegment: MediaSegment) {
         return mediaSegment.path.split('/').pop() === '0.ts';
-    }
-
-    private getMediaSegmentsCountFromM3U8(m3u8Contents: string) {
-        const matches = m3u8Contents.match(/stream\d+\.ts/g);
-
-        return matches.length;
     }
 
     private getM3U8Contents(m3u8Path: string) {

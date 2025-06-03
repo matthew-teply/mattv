@@ -79,7 +79,9 @@ export class ServiceStream {
                 currentMediaPlaying = this.serviceMedia.getMediaById(mediaSegment.mediaId);
             }
 
-            manifestMediaSegmentLines.push(`#EXTINF:${mediaSegment.duration.toFixed(3)},${currentMediaPlaying.displayName}`);
+            manifestMediaSegmentLines.push(
+                `#EXTINF:${mediaSegment.duration.toFixed(3)},${currentMediaPlaying.displayName}`
+            );
             manifestMediaSegmentLines.push(mediaSegment.path);
         });
 
@@ -89,12 +91,14 @@ export class ServiceStream {
         
         this.serviceMediaSequence.increaseMediaSequence();
 
-        this.serviceLogger.server(`Media sequence increased (${mediaSequence} → ${this.serviceMediaSequence.getMediaSequence()})`);
+        this.serviceLogger.stream(
+            `Media sequence increased (${mediaSequence} → ${this.serviceMediaSequence.getMediaSequence()})`
+        );
 
         fs.writeFileSync(path.join(PUBLIC_DIR, 'stream.m3u8'), m3u8Body);
 
-        this.serviceLogger.server(`m3u8 generated`);
-        
+        this.serviceLogger.stream(`m3u8 generated`);
+
         const lastMediaPlayedId = programRecords.pop().mediaId;
 
         this.serviceMedia.setLastMediaPlayed(this.serviceMedia.getMediaById(lastMediaPlayedId).path);

@@ -1,7 +1,7 @@
 import type { Database as IDatabase } from 'better-sqlite3';
 
 export class ServiceMediaSequence {
-    private db: IDatabase;
+    private readonly db: IDatabase;
     
     constructor(db: IDatabase) {
         this.db = db;

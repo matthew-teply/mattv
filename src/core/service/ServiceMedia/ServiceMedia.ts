@@ -4,7 +4,7 @@ import { Media, MediaType, MediaFromDb } from '@core/types';
 import { FactoryMedia } from '@core/factory';
 
 export class ServiceMedia {
-    private db: IDatabase;
+    private readonly db: IDatabase;
 
     private factoryMedia = new FactoryMedia();
 

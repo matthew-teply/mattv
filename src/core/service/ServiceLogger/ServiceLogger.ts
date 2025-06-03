@@ -20,4 +20,8 @@ export class ServiceLogger {
     client(text: string) {
         return this.log(text, callers.client);
     }
+
+    stream(text: string) {
+        return this.log(text, callers.stream);
+    }
 }
