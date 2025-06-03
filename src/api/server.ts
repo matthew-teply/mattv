@@ -14,7 +14,11 @@ import { DEFAULT_PORT } from '@api/constants';
 
 const [,, portArg] = process.argv;
 
-const port = portArg ?? DEFAULT_PORT;
+let port = DEFAULT_PORT;
+
+if (Number(portArg)) {
+    port = Number(portArg);
+}
 
 const app = express();
 
@@ -47,10 +51,10 @@ app.get('/tv', (req, res) => {
 });
 
 app.listen(port, () => {
-    serviceLogger.server(`Server started ${portArg ? `with custom port ${chalk.greenBright(port)}` : ''}
+    serviceLogger.server(`Server started ${Number(portArg) ? `with custom port ${chalk.greenBright(port)}` : ''}
 
-    ${chalk.bold('Device:')} ${chalk.cyanBright(`127.0.0.1:${port}`)}
-    ${chalk.bold('Local Network:')} ${chalk.cyanBright(`${serviceNetwork.getLocalIP()}:${port}`)}
+    ${chalk.bold('Device:')} ${chalk.cyanBright(`http://127.0.0.1:${port}`)}
+    ${chalk.bold('Local Network:')} ${chalk.cyanBright(`http://${serviceNetwork.getLocalIP()}:${port}`)}
 `);
 
     serviceMediaSequence.resetMediaSequence();
