@@ -1,0 +1,14 @@
+{
+  "name": "@mattv/core",
+  "version": "0.1.0",
+  "scripts": {
+    "program-records:generate": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./functions/programRecord/programRecordGenerate.ts",
+    "program-records:purge": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./functions/programRecord/programRecordPurge.ts",
+    "segments:generate": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./functions/mediaSegment/mediaSegmentGenerate.ts",
+    "media:check": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./functions/media/mediaCheck.ts",
+    "media:register": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./functions/media/mediaRegister.ts",
+    "media:delete": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./functions/media/mediaDelete.ts",
+    "upload:media:segments": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./functions/upload/uploadMediaWithMediaSegments.ts",
+    "upload:media:segments:bulk": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./functions/upload/uploadMediaWithMediaSegmentsBulk.ts"
+  }
+}

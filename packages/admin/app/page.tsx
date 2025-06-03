@@ -2,9 +2,9 @@ import Image from "next/image";
 import {ServiceNetwork} from "@core/service";
 import {FactoryDatabase} from "@core/factory";
 
-const db = (new FactoryDatabase()).create();
-
 const serviceNetwork = new ServiceNetwork();
+
+const db = (new FactoryDatabase()).create();
 
 export default function Home() {
   return (
@@ -26,15 +26,15 @@ export default function Home() {
             </code>
             .
           </li>
-          <li className="tracking-[-.01em]">
+          <li className="mb-2 tracking-[-.01em]">
             Save and see your changes instantly.
           </li>
-            <li className="tracking-[-.01em]">
-                Database name: {db.name}.
-            </li>
-        <li>
-            Local network IP: {serviceNetwork.getLocalIP()}.
+        <li className="mb-2 tracking-[-.01em]">
+            Local network IP: {serviceNetwork.getLocalIP()}
         </li>
+            <li className="mb-2 tracking-[-.01em]">
+                Database: {(db.prepare('SELECT 1').get() as {[key: number]: number})[1] === 1 ? 'Connected' : 'Disconnected'}
+            </li>
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">

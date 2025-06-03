@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "target": "ES2020",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@constants": ["./packages/constants.ts"],
+      "@core/*": ["./packages/core/*"],
+      "@broady/*": ["./packages/broady/*"],
+      "@admin/*": ["./packages/admin/*"],
+      "@api/*": ["./packages/api/*"],
+      "@public/*": ["./public/*"],
+    }
+  },
+  "exclude": [
+    "input-files",
+    "public",
+  ]
+}

@@ -2,23 +2,23 @@
   "name": "mattv",
   "packageManager": "yarn@4.5.2",
   "scripts": {
-    "api:start": "ts-node --project tsconfig.json -r tsconfig-paths/register src/api/server.ts",
-    "api:dev": "nodemon src/api/server.ts",
-    "admin:dev": "yarn workspace admin dev",
-    "program-records:generate": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/programRecord/programRecordGenerate.ts",
-    "program-records:purge": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/programRecord/programRecordPurge.ts",
-    "segments:generate": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/mediaSegment/mediaSegmentGenerate.ts",
-    "media:check": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaCheck.ts",
-    "media:register": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaRegister.ts",
-    "media:delete": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaDelete.ts",
-    "upload:media:segments": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/upload/uploadMediaWithMediaSegments.ts",
-    "upload:media:segments:bulk": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/upload/uploadMediaWithMediaSegmentsBulk.ts"
+    "api:start": "lerna run start --scope @mattv/api --loglevel=warn",
+    "api:dev": "lerna run dev --scope @mattv/api --loglevel=warn",
+    "admin:dev": "lerna run dev --scope @mattv/admin --loglevel=warn",
+    "program-records:generate": "lerna run program-records:generate --scope @mattv/core --loglevel=warn",
+    "program-records:purge": "lerna run program-records:purge --scope @mattv/core --loglevel=warn",
+    "segments:generate": "lerna run segments:generate --scope @mattv/core --loglevel=warn",
+    "media:check": "lerna run media:check --scope @mattv/core --loglevel=warn",
+    "media:register": "lerna run media:register --scope @mattv/core --loglevel=warn",
+    "media:delete": "lerna run media:delete --scope @mattv/core --loglevel=warn",
+    "upload:media:segments": "lerna run upload:media:segments --scope @mattv/core --loglevel=warn",
+    "upload:media:segments:bulk": "lerna run upload:media:segments:bulk --scope @mattv/core --loglevel=warn"
   },
   "workspaces": [
-    "src/admin",
-    "src/api",
-    "src/broady",
-    "src/core"
+    "packages/admin",
+    "packages/api",
+    "packages/broady",
+    "packages/core"
   ],
   "dependencies": {
     "better-sqlite3": "^11.10.0",
@@ -26,6 +26,7 @@
     "chalk": "^5.4.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "lerna": "^8.2.2",
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
