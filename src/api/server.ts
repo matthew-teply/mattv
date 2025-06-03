@@ -51,10 +51,10 @@ app.get('/tv', (req, res) => {
 });
 
 app.listen(port, () => {
-    serviceLogger.server(`Server started ${Number(portArg) ? `with custom port ${chalk.greenBright(port)}` : ''}
+    serviceLogger.server(`MatTV API started ${Number(portArg) ? `with custom port ${chalk.greenBright(port)}` : ''}
 
-    ${chalk.bold('Device:')} ${chalk.cyanBright(`http://127.0.0.1:${port}`)}
-    ${chalk.bold('Local Network:')} ${chalk.cyanBright(`http://${serviceNetwork.getLocalIP()}:${port}`)}
+    ${chalk.bold('- Local:')} ${chalk.cyanBright(`http://127.0.0.1:${port}`)}
+    ${chalk.bold('- Network:')} ${chalk.cyanBright(`http://${serviceNetwork.getLocalIP()}:${port}`)}
 `);
 
     serviceMediaSequence.resetMediaSequence();

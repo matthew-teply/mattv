@@ -2,21 +2,24 @@
   "name": "mattv",
   "packageManager": "yarn@4.5.2",
   "scripts": {
-    "server:start": "ts-node --project tsconfig.json -r tsconfig-paths/register src/api/server.ts",
-    "server:dev": "nodemon src/api/server.ts",
-
+    "api:start": "ts-node --project tsconfig.json -r tsconfig-paths/register src/api/server.ts",
+    "api:dev": "nodemon src/api/server.ts",
+    "admin:dev": "yarn workspace admin dev",
     "program-records:generate": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/programRecord/programRecordGenerate.ts",
     "program-records:purge": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/programRecord/programRecordPurge.ts",
-    
     "segments:generate": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/mediaSegment/mediaSegmentGenerate.ts",
-    
     "media:check": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaCheck.ts",
     "media:register": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaRegister.ts",
     "media:delete": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/media/mediaDelete.ts",
-    
     "upload:media:segments": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/upload/uploadMediaWithMediaSegments.ts",
     "upload:media:segments:bulk": "ts-node --project tsconfig.json -r tsconfig-paths/register src/core/functions/upload/uploadMediaWithMediaSegmentsBulk.ts"
   },
+  "workspaces": [
+    "src/admin",
+    "src/api",
+    "src/broady",
+    "src/core"
+  ],
   "dependencies": {
     "better-sqlite3": "^11.10.0",
     "bonjour": "^3.5.0",
